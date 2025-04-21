@@ -1,9 +1,14 @@
-import sqlite3
+import mysql.connector
 
-connection = sqlite3.connect("test.db")
+
+connection = mysql.connector.connect(
+    host='localhost',
+    user='sample', 
+    password='sample',
+    database='python_products'
+)
+
 cursor = connection.cursor()
-
-cursor.execute("CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)") 
 
 sel = -1
 
@@ -17,8 +22,8 @@ while sel != '0':
     sel = input("Select > ")
 
     if sel == '1':
-        result = cursor.execute("SELECT * FROM products")
-        rows = result.fetchall() 
+        cursor.execute("SELECT * FROM products")
+        rows = cursor.fetchall() 
 
         for row in rows: 
             print("Product", row[0], ":", row[1])
@@ -29,9 +34,11 @@ while sel != '0':
     elif sel == '3':
         pid = input("Product ID: ")
         pname = input("Product name: ")
-        cursor.execute("UPDATE products SET name=? WHERE id=?", (pname, pid))
+        query = "UPDATE products SET name=%s WHERE id=%s"
+        values = (pname, pid)
+        cursor.execute(query, values)
         connection.commit()
     elif sel == '4':
         pid = input("Product ID: ")
-        cursor.execute("DELETE FROM products WHERE id=?", (pid,))
+        cursor.execute("DELETE FROM products WHERE id=%s", (pid,))
         connection.commit()
